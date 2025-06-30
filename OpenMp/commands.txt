@@ -1,0 +1,6 @@
+#Compiling the openmp file
+g++ -fopenmp your_file.cpp -o output
+./output
+
+#setting the no of threads while running the programme
+OMP_NUM_THREADS=3 ./output    
