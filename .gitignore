@@ -1,2 +1,23 @@
 *.exe
 Myexe
+
+# Build directory
+
+build/
+CMakeFiles/
+CMakeCache.txt
+Makefile
+cmake_install.cmake
+
+# CMake-generated
+*.dir/
+*.obj
+*.o
+*.so
+*.a
+*.exe
+*.out
+*.log
+
+# Output files
+References/
