@@ -1,0 +1,16 @@
+<-- Introduction -->
+
+Whether you’re building a small script or architecting a large-scale application, 
+how you structure your code today determines how easy it is to adapt tomorrow. 
+That’s where the SOLID principles come in.
+
+If you follow these principles while writing your application, 
+your code will not become a mess when it grows very large,
+and it will be very easy for you to add new features to it.
+	
+Full Form of the SOLID principle:
+    S: Single Responsibility Principle (SRP)
+    O: Open/Closed Principle (OCP)
+    L: Liskov Substitution Principle (LSP)
+    I: Interface Segregation Principle (ISP)
+    D: Dependency Inversion Principle (DIP)
