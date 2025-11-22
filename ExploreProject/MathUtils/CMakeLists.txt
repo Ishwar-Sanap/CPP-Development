@@ -14,4 +14,13 @@ message("source files : " ${SOURCE_FILES} )
 
 add_library(MathUtils SHARED "${SOURCE_FILES}")
 
+# Through CMake making conditional compiling for API/Funcitons based on users need
+option(ADVANCED_API_ENABLED "This is flag for Advanced API opiton" ON)
+
+if(ADVANCED_API_ENABLED)
+    message("ADVANCED_API : ON")
+    target_compile_definitions(MathUtils PUBLIC ADVANCED_API) 
+    #using PUBLIC, ADVANCED_API macro applies to MathUtils target and all other target that links against MathUitls 
+endif()
+
 target_include_directories(MathUtils PUBLIC "${PROJECT_SOURCE_DIR}/include")

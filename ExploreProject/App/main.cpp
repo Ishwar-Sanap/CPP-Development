@@ -13,12 +13,13 @@ int main()
     else
         cout << n << " is not prime number\n";
 
+#ifdef ADVANCED_API
     int gcd = obj.getGCD(12, 15);
     cout << "GCD of 12 & 15 : " << gcd << endl;
 
     int lcm = obj.getLCM(12, 15);
     cout << "LCM of 12 & 15 : " << lcm << endl;
-
+#endif
 
     return 0;
 }

@@ -27,21 +27,17 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR})  # .a files
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR})  # .so files
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR})  # executables
 
+# Add Include Directories
+# Tell the compiler where to find header files:
+include_directories( /Include)
+
+including headers file only for current exeutable or library can't visible to other.
+
 # Add an Executable This builds an executable from your source file(s):
 add_executable(MyProject main.cpp)
 
 # Multiple files:
 add_executable(MyProject main.cpp helper.cpp utils.cpp)
-
-
-# Add Include Directories
-# Tell the compiler where to find header files:
-target_include_directories(MyProject PRIVATE include)
-
-Use PRIVATE, PUBLIC, or INTERFACE depending on visibility:
-PRIVATE: only for this target
-PUBLIC: for this and any dependent target
-INTERFACE: only for dependents, not this target
 
 # Link Libraries (inbuild or use defined libraries to main executable)
 # If you’re using any libraries (e.g., pthread, math, Boost, etc.):
@@ -64,9 +60,17 @@ add_library(MyLib STATIC mylib.cpp)
 add_library(MyLib SHARED mylib.cpp)
 
 # Tell the compiler where to find header files:
-target_include_directories(MyLib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(MyLib PUBLIC /Include)
 
-# Add Compiler Flags (Optional)
+Use PRIVATE, PUBLIC, or INTERFACE depending on visibility:
+PRIVATE: only for this target
+PUBLIC: for this and any dependent target
+INTERFACE: only for dependents, not this target
+
+so target exeutable don't need to find includes files again.
+
+
+# Add Compiler Flags (Optional)  
 add_compile_options(-Wall -Wextra)
 
 Or per target:

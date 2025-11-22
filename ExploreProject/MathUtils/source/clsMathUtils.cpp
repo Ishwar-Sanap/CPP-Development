@@ -57,7 +57,7 @@ bool clsMathUtils::isPrime(int num)
 
     return 1;
 }
-
+#ifdef ADVANCED_API
 // Euclidean Algorithm to find Greatest common divisor
 int clsMathUtils::getGCD(int num1, int num2)
 {
@@ -75,3 +75,4 @@ int clsMathUtils::getLCM(int num1, int num2)
 
     return (num1 * num2) / getGCD(num1, num2);
 }
+#endif
