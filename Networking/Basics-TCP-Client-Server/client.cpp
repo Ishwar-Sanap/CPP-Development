@@ -5,7 +5,7 @@
 using namespace std;
 
 #define PORT_NUMBER 8095
-#define SERVER_IP "192.168.1.3"
+#define SERVER_IP "127.0.0.1" // local host
 
 /*
 STEPS for creating Clinets
