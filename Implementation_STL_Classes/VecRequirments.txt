@@ -1,0 +1,41 @@
+ /*
+        //Requirements
+        Vector<int> v1; // default constructor
+
+        Vector<int> v2 = {1,2,3,4}; // constructor with initializer list
+
+        Vector<int> v3(6);  // parameter constructor
+
+        Vector<int> v4 = v3; // copy  constructor
+
+        Vector<int> v5 = {5,6,7};
+        v5 = v4; // copy assignment operator
+
+        Vector<int> v6 = std::move(v3); // move copy constructor
+
+        v6 = std::move(v5); // move asssignment operator
+
+        Vector<int> v8(itrBegin, itrend) // intialize vector with given iterators
+
+        v8.push_back(10);
+
+        v8.pop_back();
+
+        v8.size();
+
+        v8.capacity()
+
+        v8.resize(20);
+
+        v8[indx] = 11;
+
+        int ele = v8[indx];
+
+        v8.erase(iterator_pos);  // erase element at give postition
+
+        v8.clear(); // removes all the elements.
+
+        v8.empty();
+
+        Vector<int>::iterator it = v8.begin();
+    */
