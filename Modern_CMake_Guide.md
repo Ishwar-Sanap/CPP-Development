@@ -3,57 +3,48 @@
 A practical reference for writing **clean, modern, and scalable
 `CMakeLists.txt` files**.
 
-------------------------------------------------------------------------
+---
 
 # 1. Minimum Required CMake Version
 
 Always start with the minimum required version.
 
-``` cmake
+```cmake
 cmake_minimum_required(VERSION 3.20)
 ```
 
 This ensures compatibility with modern CMake features.
 
-------------------------------------------------------------------------
+---
 
 # 2. Define the Project
 
 Declare the project name, version, and supported languages.
 
-``` cmake
+```cmake
 project(MyProject VERSION 1.0 LANGUAGES CXX)
 ```
-
-Options:
-
-  Option      Meaning
-  ----------- ---------------------------
-  VERSION     Project version
-  LANGUAGES   Languages used in project
-
-------------------------------------------------------------------------
 
 # 3. Set Build Type
 
 Used mainly in **single configuration generators**.
 
-``` cmake
+```cmake
 set(CMAKE_BUILD_TYPE Release)
 ```
 
 Common values:
 
--   Debug
--   Release
--   RelWithDebInfo
--   MinSizeRel
+- Debug
+- Release
+- RelWithDebInfo
+- MinSizeRel
 
-------------------------------------------------------------------------
+---
 
 # 4. Set C++ Standard
 
-``` cmake
+```cmake
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -61,14 +52,15 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 Recommended to disable compiler specific extensions.
 
-------------------------------------------------------------------------
+---
 
 # 5. Useful Debug Messages
 
-``` cmake
+```cmake
 message(STATUS "Source dir: ${CMAKE_CURRENT_SOURCE_DIR}")
 message(STATUS "Binary dir: ${CMAKE_BINARY_DIR}")
 ```
+
 ```
 Useful variables:
 
@@ -78,17 +70,19 @@ Useful variables:
   PROJECT_SOURCE_DIR   Project root
   CMAKE_BINARY_DIR     Build directory
 ```
-------------------------------------------------------------------------
+
+---
 
 # 6. Configure Output Directories
 
-``` cmake
+```cmake
 set(OUTPUT_DIR "${PROJECT_SOURCE_DIR}/References")
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR})
 ```
+
 ```
 Output types:
 
@@ -98,43 +92,46 @@ Output types:
   LIBRARY   Shared libraries  .so files
   RUNTIME   Executables       .exe files
 ```
-------------------------------------------------------------------------
+
+---
 
 # 7. Add Executable
 
-``` cmake
+```cmake
 add_executable(MyProject main.cpp)
 ```
 
 Multiple files:
 
-``` cmake
+```cmake
 add_executable(MyProject
     src/main.cpp
     src/utils.cpp
     src/helper.cpp
 )
 ```
+
 This will creates the executable target `MyProject` from the specified source files.
 
-------------------------------------------------------------------------
+---
 
 # 8. Include Directories (Modern Method)
 
-❌ Old method : 
+❌ Old method :
 includes the directory globally for all targets, which can lead to conflicts and is not recommended.
 
-``` cmake
+```cmake
 include_directories(include)
 ```
 
 ✅ Modern target-based method
 
-``` cmake
+```cmake
 target_include_directories(MyProject PRIVATE include)
 ```
 
 It tells CMake that `MyProject` needs the `include` directory for compilation. The `PRIVATE` keyword means that this include path is only needed for this target and will not be propagated to targets that link against `MyProject`.
+
 ```
 Visibility levels:
 
@@ -144,47 +141,48 @@ Visibility levels:
   PUBLIC      This target + dependents
   INTERFACE   Only dependents
 ```
-------------------------------------------------------------------------
+
+---
 
 # 9. Creating Libraries
 
- Creating the user defined static (.a) or Shared libraris (.so) from the source files
+Creating the user defined static (.a) or Shared libraris (.so) from the source files
 
 Static library:
 
-``` cmake
+```cmake
 add_library(MyLib STATIC src/mylib.cpp)
 ```
 
 Shared library:
 
-``` cmake
+```cmake
 add_library(MyLib SHARED src/mylib.cpp)
 ```
 
 Add include directories: required for finding header files when compiling the library and also for users of the library.
 
-``` cmake
+```cmake
 target_include_directories(MyLib PUBLIC include)
 ```
 
-------------------------------------------------------------------------
+---
 
 # 10. Linking Libraries
 
 Linking a library to an executable or another library. This tells CMake that `MyProject` depends on `MyLib`, and it will link the appropriate library files during the build process.
 
-``` cmake
+```cmake
 target_link_libraries(MyProject PRIVATE MyLib)
 ```
 
 Example with system library:
 
-``` cmake
+```cmake
 target_link_libraries(MyProject PRIVATE pthread)
 ```
 
-------------------------------------------------------------------------
+---
 
 # 11. Modular Project Structure
 
@@ -206,59 +204,59 @@ Example:
 
 Main CMake:
 
-``` cmake
+```cmake
 add_subdirectory(src)
 add_subdirectory(tests)
 ```
 
-------------------------------------------------------------------------
+---
 
 # 12. Compiler Options
 
 Global:
 
-``` cmake
+```cmake
 add_compile_options(-Wall -Wextra)
 ```
 
 Preferred (target based):
 
-``` cmake
+```cmake
 target_compile_options(MyProject PRIVATE -Wall -Wextra)
 ```
 
-------------------------------------------------------------------------
+---
 
 # 13. Installing Targets
 
 Install executable:
 
-``` cmake
+```cmake
 install(TARGETS MyProject DESTINATION bin)
 ```
 
 Install headers:
 
-``` cmake
+```cmake
 install(DIRECTORY include/ DESTINATION include)
 ```
 
-------------------------------------------------------------------------
+---
 
 # 14. Using External Libraries
 
 ### find_package()
 
-``` cmake
+```cmake
 find_package(Boost REQUIRED)
 target_link_libraries(MyProject PRIVATE Boost::boost)
 ```
 
-------------------------------------------------------------------------
+---
 
 # 15. FetchContent (Dependency Download)
 
-``` cmake
+```cmake
 include(FetchContent)
 
 FetchContent_Declare(
@@ -272,16 +270,15 @@ FetchContent_MakeAvailable(json)
 target_link_libraries(MyProject PRIVATE nlohmann_json::nlohmann_json)
 ```
 
-------------------------------------------------------------------------
+---
 
 # 16. Managing Dependencies and build order
 
-``` cmake
+```cmake
 add_dependencies(MyProject MyLib1 MyLib2 MyLib3)
 ```
 
 This ensures that `MyLib1`, `MyLib2`, and `MyLib3` are built before `MyProject`. This is especially important when `MyProject` depends on these libraries, as it guarantees that all necessary components are available during the build process.
-
 
 **Normally CMake determines build order automatically using the linking information provided by `target_link_libraries()`. However, there are cases where you might have targets that do not directly link to each other but still require a specific build order. In such cases, `add_dependencies()` can be used to explicitly specify the build order.**
 
@@ -301,11 +298,11 @@ Build:
     cmake ..
     cmake --build .
 
-------------------------------------------------------------------------
+---
 
 # 18. Full Example CMakeLists.txt
 
-``` cmake
+```cmake
 cmake_minimum_required(VERSION 3.20)
 
 project(MyProject VERSION 1.0 LANGUAGES CXX)
@@ -324,9 +321,10 @@ target_link_libraries(MyProject PRIVATE MyLib)
 target_compile_options(MyProject PRIVATE -Wall -Wextra)
 ```
 
-------------------------------------------------------------------------
+---
 
 # 19. Commonly Used Commands
+
 ```
   Command                      Purpose
   ---------------------------- -------------------
@@ -338,9 +336,9 @@ target_compile_options(MyProject PRIVATE -Wall -Wextra)
   install                      Install project
   enable_testing               Enable tests
   set(SRC_FILES src/main.cpp)  Set variable values
-  ```
+```
 
-------------------------------------------------------------------------
+---
 
 # 20. CMake Best Practices
 
@@ -350,7 +348,7 @@ target_compile_options(MyProject PRIVATE -Wall -Wextra)
 ✔ Avoid global include directories\
 ✔ Use `FetchContent` or `find_package` for dependencies
 
-------------------------------------------------------------------------
+---
 
 # 21. Useful CMake Variables
 
@@ -362,6 +360,54 @@ target_compile_options(MyProject PRIVATE -Wall -Wextra)
   CMAKE_SOURCE_DIR           Root source
   CMAKE_BINARY_DIR           Build directory
   CMAKE_CURRENT_SOURCE_DIR   Current folder
+  WIN32                     Windows platform
+  UNIX                      Unix/Linux platform
+  APPLE                     Apple platform
 
 ```
-------------------------------------------------------------------------
+
+---
+
+# 22. Platform Detection
+
+```cmake
+if(WIN32)
+    target_compile_definitions(MyProject PRIVATE PLATFORM_WINDOWS)
+elseif(APPLE)
+    target_compile_definitions(MyProject PRIVATE PLATFORM_MAC)
+elseif(UNIX)
+    target_compile_definitions(MyProject PRIVATE PLATFORM_LINUX)
+endif()
+```
+
+C++ Usage :
+
+```cpp
+#ifdef PLATFORM_WINDOWS
+#include <windows.h>
+#endif
+
+#ifdef PLATFORM_LINUX
+#include <unistd.h>
+#endif
+```
+
+---
+
+# 23. Target specific compile definitions
+
+```cmake
+target_compile_definitions(MyProject PRIVATE WRITE_LOGS) # Define a macro without a value
+target_compile_definitions(MyProject PRIVATE VERSION=1) # Define a macro with a value
+```
+
+C++ Usage:
+
+```cpp
+#ifdef WRITE_LOGS
+std::cout << "Logging enabled" << std::endl;
+std::cout << "Version: " << VERSION << std::endl;
+#endif
+```
+
+---
