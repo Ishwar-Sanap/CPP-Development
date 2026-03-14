@@ -69,7 +69,7 @@ Recommended to disable compiler specific extensions.
 message(STATUS "Source dir: ${CMAKE_CURRENT_SOURCE_DIR}")
 message(STATUS "Binary dir: ${CMAKE_BINARY_DIR}")
 ```
-
+```
 Useful variables:
 
   Variable             Meaning
@@ -77,7 +77,7 @@ Useful variables:
   CMAKE_SOURCE_DIR     Root source directory
   PROJECT_SOURCE_DIR   Project root
   CMAKE_BINARY_DIR     Build directory
-
+```
 ------------------------------------------------------------------------
 
 # 6. Configure Output Directories
@@ -89,15 +89,15 @@ set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${OUTPUT_DIR})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${OUTPUT_DIR})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUTPUT_DIR})
 ```
-
+```
 Output types:
 
   Type      Description
   --------- ------------------
-  ARCHIVE   Static libraries .a files
-  LIBRARY   Shared libraries .so files
-  RUNTIME   Executables .exe files
-
+  ARCHIVE   Static libraries  .a files
+  LIBRARY   Shared libraries  .so files
+  RUNTIME   Executables       .exe files
+```
 ------------------------------------------------------------------------
 
 # 7. Add Executable
@@ -135,7 +135,7 @@ target_include_directories(MyProject PRIVATE include)
 ```
 
 It tells CMake that `MyProject` needs the `include` directory for compilation. The `PRIVATE` keyword means that this include path is only needed for this target and will not be propagated to targets that link against `MyProject`.
-
+```
 Visibility levels:
 
   Keyword     Meaning
@@ -143,7 +143,7 @@ Visibility levels:
   PRIVATE     Only this target
   PUBLIC      This target + dependents
   INTERFACE   Only dependents
-
+```
 ------------------------------------------------------------------------
 
 # 9. Creating Libraries
@@ -327,7 +327,7 @@ target_compile_options(MyProject PRIVATE -Wall -Wextra)
 ------------------------------------------------------------------------
 
 # 19. Commonly Used Commands
-
+```
   Command                      Purpose
   ---------------------------- -------------------
   add_executable               Create executable
@@ -337,7 +337,8 @@ target_compile_options(MyProject PRIVATE -Wall -Wextra)
   add_subdirectory             Include module
   install                      Install project
   enable_testing               Enable tests
-  set(SRC_Files src/main.cpp)  Set variables
+  set(SRC_FILES src/main.cpp)  Set variable values
+  ```
 
 ------------------------------------------------------------------------
 
@@ -353,6 +354,7 @@ target_compile_options(MyProject PRIVATE -Wall -Wextra)
 
 # 21. Useful CMake Variables
 
+```
   Variable                   Meaning
   -------------------------- -----------------
   PROJECT_NAME               Project name
@@ -361,4 +363,5 @@ target_compile_options(MyProject PRIVATE -Wall -Wextra)
   CMAKE_BINARY_DIR           Build directory
   CMAKE_CURRENT_SOURCE_DIR   Current folder
 
+```
 ------------------------------------------------------------------------
