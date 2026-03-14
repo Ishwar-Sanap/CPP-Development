@@ -1,6 +1,8 @@
 *.exe
 Myexe
 
+.vscode
+
 # Build directory
 
 build/
