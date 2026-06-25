@@ -331,14 +331,15 @@ public:
             if (ptrParkingSpot)
             {
                 ptrParkingSpot->unpark();
+
+                m_mapTicketId.erase(ptrTicket->m_iId);
+
+                delete ptrTicket;
+                ptrTicket = nullptr;
+
                 break;
             }
         }
-
-        m_mapTicketId.erase(ptrTicket->m_iId);
-
-        delete ptrTicket;
-        ptrTicket = nullptr;
 
         return fee;
     }
@@ -366,15 +367,15 @@ int main()
 
     Ticket *ticketPtr1 = plobj.parkVehicle(vehicle1);
     cout << "Paid : " << plobj.unParkVehicle(ticketPtr1->m_iId) << endl;
-    delete vehicle1;  // Clean up vehicle memory after unparking
+    delete vehicle1; // Clean up vehicle memory after unparking
 
     Ticket *ticketPtr2 = plobj.parkVehicle(vehicle2);
     cout << "Paid : " << plobj.unParkVehicle(ticketPtr2->m_iId) << endl;
-    delete vehicle2;  // Clean up vehicle memory after unparking
+    delete vehicle2; // Clean up vehicle memory after unparking
 
     Ticket *ticketPtr3 = plobj.parkVehicle(vehicle3);
     cout << "Paid : " << plobj.unParkVehicle(ticketPtr3->m_iId) << endl;
-    delete vehicle3;  // Clean up vehicle memory after unparking
+    delete vehicle3; // Clean up vehicle memory after unparking
 
     plobj.destroyParkingLot();
     return 0;

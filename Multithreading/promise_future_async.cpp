@@ -33,6 +33,30 @@ Return values from threads without global variables.
 
 Handle exceptions safely.
 */
+
+/*
+future does not track the promise object itself. It tracks the same shared state that the promise writes into.
+
+In your code, this happens:
+
+promise<int> p1;
+future<int> f1 = p1.get_future();
+This creates a shared state and gives f1 a handle to it.
+thread t1(getSqure, 10, move(p1));
+p1 is moved into the thread, not copied.
+Inside getSqure(int num, promise<int> pr), pr is a local parameter, but it still owns that same shared state.
+pr.set_value(res); writes the result into the shared state.
+f1.get() reads from that same shared state.
+So even though pr is passed by value, the value being "shared" is not the promise object itself. The promise is just a handle to a shared state, and moving it still preserves that connection.
+
+A useful mental model:
+
+promise = writer handle
+future = reader handle
+shared state = the actual storage both refer to
+One extra detail: std::promise is move-only, so this pattern only works because you pass it with move(p1)
+
+*/
 void getSqure(int num, promise<int> pr)
 {
     int res = num * num;
