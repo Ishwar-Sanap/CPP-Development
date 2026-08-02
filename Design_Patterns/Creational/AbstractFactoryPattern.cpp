@@ -1,103 +1,126 @@
 #include <bits/stdc++.h>
 using namespace std;
 
-// Abstract product 1
-class Employee
+/*
+What We Really Need
+A way to group related components by family (all Windows components together, all macOS components together)
+Encapsulated creation logic so platform checks happen in exactly one place
+Polymorphic products so the client works with Button and Checkbox interfaces, not concrete classes
+Structural guarantees that mixing families is impossible, not just discouraged
+This is exactly what the Abstract Factory pattern provides.
+
+
+What is Abstract Factory
+The Abstract Factory Pattern provides an interface for creating families of related or dependent objects without specifying their concrete classes.
+
+The key word is families. Factory Method deals with creating one product at a time. Abstract Factory deals with creating multiple products that must work together. A GUI factory does not just create buttons. It creates buttons, checkboxes, text fields, and menus that all share the same visual style.
+*/
+
+//Abstract product
+class Button
 {
 public:
-    Employee() {};
-    virtual ~Employee() {};
-    virtual int salary() = 0;
+    virtual void onClick() = 0;
+    virtual ~Button() = default;
 };
 
-// Abstract product 2
-class Tool
+//Abstract product
+class CheckBox
 {
 public:
-    virtual ~Tool() = default;
-    virtual void toolUsed() = 0;
+    virtual void onSelect() = 0;
+    virtual ~CheckBox() = default;
 };
 
-// Concreate products
-class WebDev : public Employee
+//Concreate Product
+class WindowsButton : public Button
 {
-    int salary()
+public:
+    void onClick() override
     {
-        cout << "salary of web developer " << endl;
-        return 50000;
+        cout << "Windows button clicked" << endl;
     }
 };
 
-class JavaDev : public Employee
+//Concreate Product
+class LinuxButton : public Button
 {
-    int salary()
+public:
+    void onClick() override
     {
-        cout << "salary of Java developer " << endl;
-        return 150000;
+        cout << "Linux button clicked" << endl;
     }
 };
 
-class VsCode : public Tool
+//Concreate Product
+class WindowsCheckBox : public CheckBox
 {
-    void toolUsed()
+public:
+    void onSelect() override
     {
-        cout << "Using VsCode " << endl;
-    }
-};
-class Ecliplse : public Tool
-{
-    void toolUsed()
-    {
-        cout << "Using Ecliplse IDE " << endl;
+        cout << "Window CheckBox selected" << endl;
     }
 };
 
-//Abstract Factory → Declares creation methods for families.
-class EmployeeAbstractFactory
+//Concreate Product
+class LinuxCheckBox : public CheckBox
 {
 public:
-    virtual ~EmployeeAbstractFactory() = default;
-    virtual Employee *getEmployeeObj() = 0;
-    virtual Tool *getToolUsedObj() = 0;
+    void onSelect() override
+    {
+        cout << "Linux CheckBox selected" << endl;
+    }
 };
 
-//Concrete Factories → Implement creation methods for a specific family.
-class WebDevFactory : public EmployeeAbstractFactory
+// Abstract Factory
+class GUIFactory
 {
 public:
-    Employee *getEmployeeObj() { return new WebDev(); }
-    Tool *getToolUsedObj() { return new VsCode(); }
+    virtual Button *createButton() = 0;
+    virtual CheckBox *createCheckBox() = 0;
 };
-class JavaDevFactory : public EmployeeAbstractFactory
+
+//concreate factory
+class WindowsFactory : public GUIFactory
 {
 public:
-    Employee *getEmployeeObj() { return new JavaDev(); }
-    Tool *getToolUsedObj() { return new Ecliplse(); }
+    Button *createButton() override
+    {
+        return new WindowsButton();
+    }
+    CheckBox *createCheckBox() override
+    {
+        return new WindowsCheckBox();
+    }
+};
+
+
+//concreate factory
+class LinuxFactory : public GUIFactory
+{
+public:
+    Button *createButton() override
+    {
+        return new LinuxButton();
+    }
+    CheckBox *createCheckBox() override
+    {
+        return new LinuxCheckBox();
+    }
 };
 
 int main()
 {
-    // Client code
-    string type = "Java Dev";
+    GUIFactory *factory = new WindowsFactory();
+    factory->createButton()->onClick();
+    factory->createCheckBox()->onSelect();
 
-    EmployeeAbstractFactory *ptObjFactory = nullptr;
-    if (type == "Java Dev")
-    {
-        ptObjFactory = new JavaDevFactory();
-    }
+    GUIFactory *factory2 = new LinuxFactory();
+    factory2->createButton()->onClick();
+    factory2->createCheckBox()->onSelect();
 
-    Employee *e1 = ptObjFactory->getEmployeeObj();
-    Tool *t1 = ptObjFactory->getToolUsedObj();
-
-    cout << e1->salary() << endl;
-
-    t1->toolUsed();
-
-    delete e1;
-    e1 = nullptr;
-
-    delete t1;
-    t1 = nullptr;
+    delete factory;
+    delete factory2;
 
     return 0;
 }

@@ -28,6 +28,9 @@ class JavaDev : public Employee
     }
 };
 
+// Factory Pattern: one factory class creates objects.
+//Simple approach, but it violates open close principle becuase every time when you want to add new type needs to add more if conditions
+
 class EmployeeFactory
 {
 public:
@@ -62,3 +65,55 @@ int main()
 
     return 0;
 }
+
+// Factory Method: object creation is delegated to subclasses.
+
+class Animal {
+public:
+    virtual void speak() = 0;
+    virtual ~Animal() = default;
+};
+
+class Dog : public Animal {
+public:
+    void speak() override {
+        cout << "Bark\n";
+    }
+};
+
+class Cat : public Animal {
+public:
+    void speak() override {
+        cout << "Meow\n";
+    }
+};
+
+class AnimalFactory {
+public:
+    virtual unique_ptr<Animal> createAnimal() = 0;
+    virtual ~AnimalFactory() = default;
+};
+
+class DogFactory : public AnimalFactory {
+public:
+    unique_ptr<Animal> createAnimal() override {
+        return make_unique<Dog>();
+    }
+};
+
+class CatFactory : public AnimalFactory {
+public:
+    unique_ptr<Animal> createAnimal() override {
+        return make_unique<Cat>();
+    }
+};
+
+// int main() {
+//     DogFactory dogFactory;
+//     auto dog = dogFactory.createAnimal();
+//     dog->speak();
+
+//     CatFactory catFactory;
+//     auto cat = catFactory.createAnimal();
+//     cat->speak();
+// }

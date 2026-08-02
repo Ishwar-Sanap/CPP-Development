@@ -2,117 +2,169 @@
 using namespace std;
 
 /*
-It allows objects with incompatible interfaces to collaborate.
-Think of it like a universal travel adapter for your electronic devices.
-The adapter acts as a bridge, translating the interface of one class into an interface that another class expects.
+The Adapter Design Pattern is a structural design pattern that allows incompatible interfaces to work together by converting the interface of one class into another that the client expects.
 
+It’s particularly useful in situations where:
 
-
-Problem: AudioPlayer only supports .mp3; new formats require different interfaces.
-Constraint: Can’t modify AdvancedMediaPlayer.
-Solution: Create MediaAdapter that bridges AudioPlayer and AdvancedMediaPlayer.
-Result: Now AudioPlayer can play .mp3, .mp4, and .vlc seamlessly, without rewriting old code.
+You’re integrating with a legacy system or a third-party library that doesn’t match your current interface.
+You want to reuse existing functionality without modifying its source code.
+You need to bridge the gap between new and old code, or between systems built with different interface designs.
 
 */
 
-//Target Interface
-class MediaPlayer
+// Target Interface
+class PaymentProcessor
 {
 public:
-    virtual void play(string fName) = 0;
-    virtual ~MediaPlayer() = default;
+    virtual void processPayment(double amount, string currency) = 0;
+    virtual bool isPaymentSuccessful() = 0;
+    virtual string getTransactionId() = 0;
+    virtual ~PaymentProcessor() {}
 };
 
-//Adaptee (Incompatible class)
-class AdvancedPlayer
+// Your team already has an internal payment processor that fits this interface perfectly:
+class InHousePaymentProcessor : public PaymentProcessor
 {
-public:
-    void playMp4(string file)
-    {
-        cout << "Playing " << file << " from advanced player" << endl;
-    }
-    void playVlc(string file)
-    {
-        cout << "Playing " << file << " from advanced player" << endl;
-    }
-};
-
-//Adapter : which acts as bridge between Target & Adaptee.
-class MediaAdapter : MediaPlayer
-{
-    AdvancedPlayer *m_ptrObj; // composition (holds the object of another class)
-    string m_format;
+private:
+    string transactionId;
+    bool paymentSuccessful = false;
 
 public:
-    MediaAdapter(string f)
+    void processPayment(double amount, string currency) override
     {
-        m_format = f;
-        m_ptrObj = new AdvancedPlayer();
+        cout << "InHouseProcessor: Processing " << amount << " " << currency << endl;
+        auto now = chrono::duration_cast<chrono::milliseconds>(
+                       chrono::system_clock::now().time_since_epoch())
+                       .count();
+        transactionId = "TXN_" + to_string(now);
+        paymentSuccessful = true;
+        cout << "InHouseProcessor: Success. Txn ID: " << transactionId << endl;
     }
 
-    void play(string fName) override
+    bool isPaymentSuccessful() override
     {
-        if (m_format == "mp4")
-            m_ptrObj->playMp4(fName);
-        else if (m_format == "vlc")
-            m_ptrObj->playVlc(fName);
-        else
-            cout << fName << " is not supported by Adapter" << endl;
+        return paymentSuccessful;
     }
 
-    ~MediaAdapter()
+    string getTransactionId() override
     {
-        delete m_ptrObj;
-        m_ptrObj = nullptr;
+        return transactionId;
     }
 };
 
-//client using Adapter
-class AudioPlayer : public MediaPlayer
+// Your CheckoutService uses this interface and works beautifully with the in-house payment processor:
+class CheckoutService
 {
-    MediaAdapter *m_ptrObj;
+private:
+    PaymentProcessor *paymentProcessor;
 
 public:
-    void play(string fName) override
+    CheckoutService(PaymentProcessor *processor) : paymentProcessor(processor) {}
+
+    void checkout(double amount, std::string currency)
     {
-        if (fName.find(".mp3") != string::npos)
+        std::cout << "Checkout: Processing order for $" << amount << " " << currency << std::endl;
+
+        paymentProcessor->processPayment(amount, currency);
+
+        if (paymentProcessor->isPaymentSuccessful())
         {
-            cout << "Playing " << fName << endl;
-        }
-        else if (fName.find(".mp4") != string::npos)
-        {
-            m_ptrObj = new MediaAdapter("mp4");
-            m_ptrObj->play(fName);
-            delete m_ptrObj;
-            m_ptrObj = nullptr;
-        }
-        else if (fName.find(".vlc") != string::npos)
-        {
-            m_ptrObj = new MediaAdapter("vlc");
-            m_ptrObj->play(fName);
-            delete m_ptrObj;
-            m_ptrObj = nullptr;
+            std::cout << "Checkout: Order successful! Txn: "
+                      << paymentProcessor->getTransactionId() << std::endl;
         }
         else
         {
-            cout << "Not supprted format :(" << endl;
+            std::cout << "Checkout: Order failed." << std::endl;
         }
     }
+};
 
-    ~AudioPlayer()
+// The Incompatible Legacy Gateway
+// Here's what that legacy payment class looks like:
+class LegacyGateway
+{
+private:
+    long transactionReference = 0;
+    bool paymentSuccessful = false;
+
+public:
+    void executeTransaction(double totalAmount, string currency)
     {
-        delete m_ptrObj;
-        m_ptrObj = nullptr;
+        cout << "LegacyGateway: Executing " << currency << " " << totalAmount << endl;
+        transactionReference = chrono::duration_cast<chrono::nanoseconds>(
+                                   chrono::system_clock::now().time_since_epoch())
+                                   .count();
+        paymentSuccessful = true;
+        cout << "LegacyGateway: Done. Ref: " << transactionReference << endl;
+    }
+
+    bool checkStatus(long ref)
+    {
+        cout << "LegacyGateway: Checking status for ref: " << ref << endl;
+        return paymentSuccessful;
+    }
+
+    long getReferenceNumber()
+    {
+        return transactionReference;
+    }
+};
+
+// Adding Adapter
+class LegacyGatewayAdapter : public PaymentProcessor
+{
+private:
+    LegacyGateway *legacyGateway;
+    long currentRef;
+
+public:
+    LegacyGatewayAdapter(LegacyGateway *legacyGateway) : legacyGateway(legacyGateway), currentRef(0) {}
+
+    void processPayment(double amount, string currency) override
+    {
+        cout << "Adapter: Translating processPayment() for " << amount << " " << currency << endl;
+        legacyGateway->executeTransaction(amount, currency);
+        currentRef = legacyGateway->getReferenceNumber();
+    }
+
+    bool isPaymentSuccessful() override
+    {
+        return legacyGateway->checkStatus(currentRef);
+    }
+
+    string getTransactionId() override
+    {
+        return "LEGACY_TXN_" + to_string(currentRef);
     }
 };
 
 int main()
 {
-    MediaPlayer *player = new AudioPlayer();
-    player->play("abc.mp3");
-    player->play("sffe3abc.mp4");
-    player->play("abc.vlc");
-    player->play("etererg.mp2");
+    cout << "--- Using Modern Processor ---" << endl;
+    InHousePaymentProcessor processor;
+    CheckoutService checkout(&processor);
+    checkout.checkout(199.99, "USD");
+    /*
+    Everything works smoothly. You’ve decoupled your checkout business logic from the underlying payment implementation, allowing future flexibility. Great job so far.
 
+    Now management drops a new requirement: integrate with a legacy third-party payment provider. Its SDK is battle-tested and reliable,
+    but its interface looks nothing like yours.
+
+    And here is the constraint:
+
+    You cannot change CheckoutService, it is used system-wide and depends on PaymentProcessor
+    You cannot modify LegacyGateway, it is from an external vendor
+    But you must make them work together
+    What you need is a translator, a class that sits between CheckoutService and LegacyGateway, adapting the incompatible interface into one that works with your system.
+
+    This is exactly what the Adapter Design Pattern does.
+    */
+
+    // Legacy gateway through adapter
+    cout << "\n--- Using Legacy Gateway via Adapter ---" << endl;
+    LegacyGateway legacy;
+    LegacyGatewayAdapter adapter(&legacy);
+    CheckoutService legacyCheckout(&adapter);
+    legacyCheckout.checkout(75.50, "USD");
     return 0;
 }

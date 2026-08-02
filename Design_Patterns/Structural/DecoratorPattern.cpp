@@ -12,7 +12,7 @@ public:
     virtual ~Coffe() = default;
 };
 
-//Concreate componetn
+// Concreate componetn
 class BaseCoffee : public Coffe
 {
 public:
@@ -27,7 +27,7 @@ public:
     }
 };
 
-//Decorator
+// Decorator
 class CoffeDecorator : public Coffe
 {
 public:
@@ -41,7 +41,7 @@ public:
     }
 };
 
-//Concreat Decorator
+// Concreat Decorator
 class MilkDecorator : public CoffeDecorator
 {
 public:
@@ -74,30 +74,118 @@ public:
     }
 };
 
+// int main()
+// {
+//     Coffe *ptrObjCoffee = new BaseCoffee();
+
+//     string display = ptrObjCoffee->getDescription() + to_string(ptrObjCoffee->getCost());
+//     cout << display << endl;
+
+//     ptrObjCoffee = new MilkDecorator(ptrObjCoffee);
+//     display = ptrObjCoffee->getDescription() + to_string(ptrObjCoffee->getCost());
+//     cout << display << endl;
+
+//     ptrObjCoffee = new ChocoDecorator(ptrObjCoffee);
+//     display = ptrObjCoffee->getDescription() + to_string(ptrObjCoffee->getCost());
+//     cout << display << endl;
+
+//     // Another way to add decorators in Base Coffee...
+//     Coffe *specialCofee = new ChocoDecorator(new BaseCoffee());
+//     cout << specialCofee->getDescription() << " " << specialCofee->getCost();
+
+//     delete ptrObjCoffee;
+//     ptrObjCoffee = nullptr;
+
+//     delete specialCofee;
+//     specialCofee = nullptr;
+
+//     return 0;
+// }
+
+// Example2
+// Simple Text viewer
+
+class TextViewer
+{
+public:
+    virtual void render() = 0;
+    virtual ~TextViewer() = default;
+};
+
+// This is the basic object we want to decorate.
+class PlainText : public TextViewer
+{
+    string text;
+
+public:
+    PlainText(const string &text) : text(text) {}
+    void render() override
+    {
+        cout << text;
+    }
+};
+
+class TextDecorator : public TextViewer
+{
+protected:
+    TextViewer *inner;
+
+public:
+    TextDecorator(TextViewer *inner) : inner(inner) {}
+
+    ~TextDecorator()
+    {
+        // This is not always safe to directly delete memory here
+        //  since, inner poiner can points to memory which is allocated on stack not heap,
+        // so we can't delete stack allocated memory using delete, to handle this we must add flag in class member to check allocation type
+        //  delete inner;
+        //  inner = nullptr;
+    }
+};
+
+class BoldTextDecorator : public TextDecorator
+{
+public:
+    BoldTextDecorator(TextViewer *inner) : TextDecorator(inner) {}
+
+    void render() override
+    {
+        cout << "<b>";
+        inner->render();
+        cout << "</b>";
+    }
+};
+class ItalicTextDecorator : public TextDecorator
+{
+public:
+    ItalicTextDecorator(TextViewer *inner) : TextDecorator(inner) {}
+
+    void render() override
+    {
+        cout << "<i>";
+        inner->render();
+        cout << "</i>";
+    }
+};
+
 int main()
 {
-    Coffe *ptrObjCoffee = new BaseCoffee();
+    PlainText text("Hello world");
+    // text.render();
 
-    string display = ptrObjCoffee->getDescription() + to_string(ptrObjCoffee->getCost());
-    cout << display << endl;
+    BoldTextDecorator btext(&text);
+    // btext.render();
 
-    ptrObjCoffee = new MilkDecorator(ptrObjCoffee);
-    display = ptrObjCoffee->getDescription() + to_string(ptrObjCoffee->getCost());
-    cout << display << endl;
+    ItalicTextDecorator itext(&btext);
+    itext.render();
 
-    ptrObjCoffee = new ChocoDecorator(ptrObjCoffee);
-    display = ptrObjCoffee->getDescription() + to_string(ptrObjCoffee->getCost());
-    cout << display << endl;
+    cout << endl;
 
-    //Another way to add decorators in Base Coffee...
-    Coffe *specialCofee = new ChocoDecorator(new BaseCoffee());
-    cout << specialCofee->getDescription() << " " << specialCofee->getCost();
+    TextViewer *ptr = new ItalicTextDecorator(new PlainText("Decorator Pattern"));
+    ptr->render();
+    cout << endl;
 
-    delete ptrObjCoffee;
-    ptrObjCoffee = nullptr;
-
-    delete specialCofee;
-    specialCofee = nullptr;
+    delete ptr;
 
     return 0;
 }
