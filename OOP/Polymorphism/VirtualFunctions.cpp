@@ -16,6 +16,7 @@ public:
     //wrapper function to call private virtual function
     void callingFun()
     {
+        //Since fun() is overridden in derived class, and we have created object of derived class Derived fun will be called
         fun();
     }
 
@@ -35,6 +36,10 @@ public:
         cout << "Derived fun" << endl;
     }
 
+    void virtual gun(){
+        cout<<"Deriverd gun "<<endl;
+    }
+
     ~Deriverd()
     {
         cout << "Derived destructor" << endl;
@@ -44,7 +49,9 @@ public:
 int main()
 {
     Base *ptrBase = new Deriverd;
+    // ptrBase->fun(); // function "Base::fun" (declared at line 10) is inaccessible
     ptrBase->callingFun();
+    // ptrBase->gun(); //class "Base" has no member "gun"
 
     delete ptrBase;
     

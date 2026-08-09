@@ -4,6 +4,10 @@ using namespace std;
 //It allows an object to change its behavior when its internal state changes.
 
 // forward declaration..
+/*
+You must separate the class declarations from the method implementations. 
+The implementations should only be provided after all the classes have been fully defined.
+*/
 class TraficLight;
 
 // Abstract State
